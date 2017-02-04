@@ -18,7 +18,7 @@ gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 # Detect faces in the image
 faces = faceCascade.detectMultiScale(
     gray,
-    scaleFactor=1.2,
+    scaleFactor=1.3,
     minNeighbors=5,
     minSize=(30, 30)
     #flags = cv2.CV_HAAR_SCALE_IMAGE

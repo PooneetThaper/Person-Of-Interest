@@ -4,7 +4,9 @@ import cv2
 
 # Get user supplied values
 cascPath = 'cascade/haarcascade_frontalface_default.xml'
-imagePath = sys.argv[1]
+label= sys.argv[1]
+imagePath = sys.argv[2]
+
 
 # Create the haar cascade
 faceCascade = cv2.CascadeClassifier(cascPath)
@@ -28,8 +30,8 @@ print("Found {0} faces!".format(len(faces)))
 p = []
 for (x, y, w, h) in faces:
     # padding used to get a wider angle view of face for classification
-    yPadding = h/5
-    xPadding = w/5
+    yPadding = int(h/4.5)
+    xPadding = int(w/4.5)
 
     # padding might go out of bounds so this is here to prevent that
     leftLim = x-xPadding
@@ -47,17 +49,17 @@ for (x, y, w, h) in faces:
     botLim = y+h+yPadding
     if botLim > image.shape[0]:
         botLim = image.shape[0] - 1
-    p.append(image[topLim:(botLim),leftLim:(rightLim)])
+    p.append(image[topLim:botLim,leftLim:rightLim])
 
 # Import tensorflow for image recognition
 import tensorflow as tf, sys
 
 # Loads label file, strips off carriage return
 label_lines = [line.rstrip() for line
-                   in tf.gfile.GFile("ClassificationModel/retrained_labels.txt")]
+                   in tf.gfile.GFile("ClassificationModel/{}/retrained_labels.txt".format(label))]
 
 # Unpersists graph from file
-with tf.gfile.FastGFile("ClassificationModel/retrained_graph.pb", 'rb') as f:
+with tf.gfile.FastGFile("ClassificationModel/{}/retrained_graph.pb".format(label), 'rb') as f:
     graph_def = tf.GraphDef()
     graph_def.ParseFromString(f.read())
     _ = tf.import_graph_def(graph_def, name='')
@@ -87,7 +89,7 @@ with tf.Session() as sess:
 
         # If found save as a success and increase num (else save as fail)
         # Positive result requires at least 80% confidence
-        if label_lines[top_k[0]] == 'obama' and predictions[0][top_k[0]] > 0.75:
+        if label_lines[top_k[0]] == label and predictions[0][top_k[0]] > 0.75:
             successes.append(1)
             num = num + 1;
         else:
@@ -102,7 +104,7 @@ with tf.Session() as sess:
 
 
 
-print("Found {0} Obama!".format(num))
+print("Found {} {}(s)!".format(num,label))
 
 #prepareing to resize image for large images
 r = 500.0 / image.shape[0]

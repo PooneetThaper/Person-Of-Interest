@@ -1,2 +1,17 @@
 # WheresObama
-Where's Waldo expect the computer tries to find former president Barack Obama in an image using machine learning and OpenCV
+
+## Description
+This program uses transfer learning on Google's Inception v3 image classification model and OpenCV to detect Former President Obama in images. It does so by using OpenCV to find all faces in the images and the retrained image classification model to decide whether or not that face is President Obama. 
+
+## Usage
+'''
+$ python3 face_detect_cv3.py [path/to/image]
+'''
+
+## Dependencies
+* TensorFlow
+* OpenCV3
+* Python3
+
+## Credits
+* @shantnu for the facial detection code 

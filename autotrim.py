@@ -39,14 +39,15 @@ for file in os.listdir('trim'):
     print("Found {0} faces!".format(len(faces)))
 
     # If it found more than one face or no faces, write file to fail directory
-    if len(faces) != 1: #This was used for photos where only one face was expected (ie the face that we need to classify)
-    #if len(faces) == 0:
+    #len(faces) != 1: #This was used for photos where only one face was expected (ie the face that we need to classify)
+    if len(faces) == 0:
       cv2.imwrite(os.path.join('trimFail/',file),image)
       fails += 1
       continue
     # Else write to successfully trimmed folder
     else:
         successes += 1
+        i=0
         for (x, y, w, h) in faces:
             yPadding = h/5
             xPadding = w/5
@@ -67,7 +68,8 @@ for file in os.listdir('trim'):
             if botLim > image.shape[0]:
                 botLim = image.shape[0] - 1
 
-            cv2.imwrite(os.path.join('trimmed/',file),image[topLim:(botLim),leftLim:(rightLim)])
+            cv2.imwrite(os.path.join('trimmed/{}/'.format(i),file),image[topLim:(botLim),leftLim:(rightLim)])
+            i=i+1
 
 print ("Successes:{0}".format(successes))
 print ("Fails:{0}".format(fails))

@@ -16,7 +16,7 @@ gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 # Detect faces in the image
 faces = faceCascade.detectMultiScale(
     gray,
-    scaleFactor=1.1,
+    scaleFactor=1.2,
     minNeighbors=5,
     minSize=(30, 30)
     #flags = cv2.CV_HAAR_SCALE_IMAGE
@@ -27,7 +27,27 @@ print("Found {0} faces!".format(len(faces)))
 # Take all found faces and put them in p for later saving
 p = []
 for (x, y, w, h) in faces:
-    p.append(image[y:(y+h),x:(x+w)])
+    # padding used to get a wider angle view of face for classification
+    yPadding = h/5
+    xPadding = w/5
+
+    # padding might go out of bounds so this is here to prevent that
+    leftLim = x-xPadding
+    if leftLim < 0:
+        leftLim = 0
+
+    rightLim = x+w+xPadding
+    if rightLim > image.shape[1]:
+        rightLim = image.shape[1] - 1
+
+    topLim = y-yPadding
+    if topLim < 0:
+        topLim = 0
+
+    botLim = y+h+yPadding
+    if botLim > image.shape[0]:
+        botLim = image.shape[0] - 1
+    p.append(image[topLim:(botLim),leftLim:(rightLim)])
 
 # Import tensorflow for image recognition
 import tensorflow as tf, sys
@@ -67,7 +87,7 @@ with tf.Session() as sess:
 
         # If found save as a success and increase num (else save as fail)
         # Positive result requires at least 80% confidence
-        if label_lines[top_k[0]] == '+' and predictions[0][top_k[0]] > 0.8:
+        if label_lines[top_k[0]] == 'obama' and predictions[0][top_k[0]] > 0.75:
             successes.append(1)
             num = num + 1;
         else:
@@ -85,8 +105,8 @@ with tf.Session() as sess:
 print("Found {0} Obama!".format(num))
 
 #prepareing to resize image for large images
-r = 500.0 / image.shape[1]
-dim = (500, int(image.shape[0] * r))
+r = 500.0 / image.shape[0]
+dim = (int(image.shape[1] * r),500)
 
 i=0
 for (x, y, w, h) in faces:

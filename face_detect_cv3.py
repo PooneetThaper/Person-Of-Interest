@@ -1,5 +1,5 @@
 import sys
-sys.path.append('/usr/local/lib/python3.5/site-packages')
+sys.path.append('/usr/local/lib/python3.6/site-packages')
 import cv2
 
 # Get user supplied values

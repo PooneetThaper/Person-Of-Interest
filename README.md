@@ -18,7 +18,7 @@ for available labels see ClassificationModel folder
 
 Ex: 
 ```
-python3 face_detect_cv3.py obama [path/to/image]
+$ python3 face_detect_cv3.py obama [path/to/image]
 ```
 
 ## Dependencies
